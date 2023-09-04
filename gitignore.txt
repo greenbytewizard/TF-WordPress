@@ -1,0 +1,25 @@
+# Local terraform directories
+**/.GitHub/*
+
+# State files
+*.tfstate
+*.tfstate.*
+
+# Crash log files
+*.log
+
+# Sensitive data
+*.tfvars
+
+# Executables 
+*.Executables
+
+# Keys Folder
+Keys/
+*.pem
+*.csv
+
+#Backup files
+*.Backup
+
+terraform.lock.hcl/
