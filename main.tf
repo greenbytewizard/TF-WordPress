@@ -51,17 +51,6 @@ resource "null_resource" "configure-vm" {
     }
   }
 
-  provisioner "file" {
-    source      = "C:/GitHub/mysql_script.sql"
-    destination = "/tmp/mysql_script.sql"
-
-    connection {
-      type        = "ssh"
-      user        = "ec2-user"
-      private_key = tls_private_key.ssh.private_key_pem
-      host        = aws_instance.ec2.public_ip
-    }
-  }
   # Change permissions on bash script and execute from ec2-user.
   # [,] an array of... 
   provisioner "remote-exec" {
