@@ -8,7 +8,7 @@ for ((current_attempt=1; current_attempt <= max_attempts; current_attempt++));
     do
     echo "Attempt $current_attempt:"
     # Run the commands
-    dnf update -y
+    dnf upgrade -y
     dnf install -y httpd wget php-fpm php-mysqli php-json php php-devel
     # Check if the commands were successful
     if [ $? -eq 0 ]; then
