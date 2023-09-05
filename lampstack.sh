@@ -61,7 +61,7 @@ EC2_GROUPS= groups ec2-user
 CheckUserGroups () {
 if [[ $EC2_GROUPS =~ 'apache' ]];
 then
-    echo "Installed Properly"
+    echo "Groups set properly"
 else 
     usermod -a -G apache ec2-user
 fi
@@ -74,7 +74,7 @@ CheckUserGroups
 # stat -c(use the specified FORMAT instead of the default); %a(access rights in octal) %A(acess rights in human readable form) --help
 if [ "$(stat -c '%a' /var/www)" == "2775" ]
 then
-    echo "It's me a Mario"
+    echo "Permissions set properly"
 else
     chown -R ec2-user:apache /var/www
     chgrp -R apache /var/www
