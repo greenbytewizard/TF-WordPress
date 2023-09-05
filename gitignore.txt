@@ -13,7 +13,7 @@
 
 # Executables 
 *.Executables
-
+*.exe
 # Keys Folder
 Keys/
 *.pem
@@ -23,3 +23,5 @@ Keys/
 *.Backup
 
 terraform.lock.hcl/
+*.terraform
+*.tftpl
