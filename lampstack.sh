@@ -25,7 +25,7 @@ for ((current_attempt=1; current_attempt <= max_attempts; current_attempt++));
         fi
     fi
 done
-
+#this a line
 # script level variables something=name
 ## Do a dnf list on the versions to check if they are installed 
 desired_app=('mariadb105-server')
