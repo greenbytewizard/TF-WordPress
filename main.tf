@@ -40,7 +40,7 @@ resource "null_resource" "configure-vm" {
   # triggers: The triggers block specifies values that, when changed, cause Terraform to consider the resource to be "tainted" and thus trigger a recreation
   # Login to the ec2-user with the aws key.    
   provisioner "file" {
-    source      = templatefile("lampstack.sh.tftpl", {mysql_pwd = random_password.mysql_pwd.result})
+    source      = templatefile("lampstack.sh.tftpl", {wordpress_user_pwd = random_password.wordpress_user_pwd.result})
     destination = "/tmp/lampstack.sh"
 
     connection {
@@ -82,9 +82,5 @@ resource "random_password" "mysql_root_pwd" {
 }
 
 resource "random_password" "wordpress_user_pwd" {
-  length = 16
-}
-
-resource "random_password" "mysql_pwd" {
   length = 16
 }
