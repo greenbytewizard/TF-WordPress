@@ -95,3 +95,8 @@ provisioner "local-exec" {
     Write-Host "Random passwords saved to random_passwords.txt"
   EOF
   }
+  # In PowerShell, double-quoted strings (") allow you to embed variables within the string by using $variableName. 
+  # The backtick (`) character is used as an escape character to insert a newline (n) character, which creates 
+  # a line break between "Password 1" and "Password 2" in the final output.
+  # The | symbol is known as the pipe operator in PowerShell. 
+  # It is used to pass the output (in this case, the value of the $output variable) from one command to another as input.
