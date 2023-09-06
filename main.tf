@@ -101,8 +101,7 @@ resource "random_password" "salt_passwords" {
   length = 16
   special          = true
   override_special = "!@#$%&*()-_=+[]{}|;:'\",.<>?/`~"
-}
-provisioner "local-exec" {
+ provisioner "local-exec" {
   command = <<EOF
     $password1 = "${random_password.mysql_root_pwd.result}"
     $password2 = "${random_password.wordpress_user_pwd.result}"
@@ -111,6 +110,7 @@ provisioner "local-exec" {
     Write-Host "Random passwords saved to random_passwords.txt"
   EOF
   }
+}
   # In PowerShell, double-quoted strings (") allow you to embed variables within the string by using $variableName. 
   # The backtick (`) character is used as an escape character to insert a newline (n) character, which creates 
   # a line break between "Password 1" and "Password 2" in the final output.
