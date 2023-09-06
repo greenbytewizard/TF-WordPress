@@ -14,10 +14,12 @@ resource "aws_key_pair" "kp" {
   public_key = tls_private_key.ssh.public_key_openssh
 
   # Create "terraform-key-pair.pem" in current directory
-provisioner "local-exec" {
+  provisioner "local-exec" {
   command = <<EOF
-      echo '${tls_private_key.ssh.private_key_pem}' > ./'${var.generated_key_name}'.pem
-      chmod 400 ./'${var.generated_key_name}'.pem
+      $privateKey = "${tls_private_key.ssh.private_key_pem}"
+      $privateKey | Out-File -FilePath ".\\${var.generated_key_name}.pem" -Encoding utf8
+      Set-Content ".\\${var.generated_key_name}.pem" -Value $privateKey -Encoding utf8
+      attrib +R ".\\${var.generated_key_name}.pem"
   EOF
   }
 }
@@ -84,3 +86,12 @@ resource "random_password" "mysql_root_pwd" {
 resource "random_password" "wordpress_user_pwd" {
   length = 16
 }
+provisioner "local-exec" {
+  command = <<EOF
+    $password1 = "${random_password.mysql_root_pwd.result}"
+    $password2 = "${random_password.wordpress_user_pwd.result}"
+    $output = "Password 1: $password1`nPassword 2: $password2"
+    $output | Out-File -FilePath ".\\random_passwords.txt" -Encoding utf8
+    Write-Host "Random passwords saved to random_passwords.txt"
+  EOF
+  }
