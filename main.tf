@@ -44,13 +44,23 @@ resource "null_resource" "configure-vm" {
   provisioner "file" {
     source      = templatefile("lampstack.sh.tftpl", {wordpress_user_pwd = random_password.wordpress_user_pwd.result})
     destination = "/tmp/lampstack.sh"
-
-    connection {
-      type        = "ssh"
-      user        = "ec2-user"
-      private_key = tls_private_key.ssh.private_key_pem
-      host        = aws_instance.ec2.public_ip
-    }
+  }
+  connection {
+    type        = "ssh"
+    user        = "ec2-user"
+    private_key = tls_private_key.ssh.private_key_pem
+    host        = aws_instance.ec2.public_ip
+  }
+  provisioner "file" {
+    source = templatefile("lampstack.sh.tftpl", {PASSWORD_1 = random_password.salt_passwords[0].result, 
+    PASSWORD_2 = random_password.salt_passwords[1].result, 
+    PASSWORD_3 = random_password.salt_passwords[2].result, 
+    PASSWORD_4 = random_password.salt_passwords[3].result, 
+    PASSWORD_5 = random_password.salt_passwords[4].result, 
+    PASSWORD_6 = random_password.salt_passwords[5].result, 
+    PASSWORD_7 = random_password.salt_passwords[6].result, 
+    PASSWORD_8 = random_password.salt_passwords[7].result })
+  destination = "/tmp/lampstack.sh"
   }
 
   # Change permissions on bash script and execute from ec2-user.
@@ -85,6 +95,12 @@ resource "random_password" "mysql_root_pwd" {
 
 resource "random_password" "wordpress_user_pwd" {
   length = 16
+}
+resource "random_password" "salt_passwords" {
+  count  = 8
+  length = 16
+  special          = true
+  override_special = "!@#$%&*()-_=+[]{}|;:'\",.<>?/`~"
 }
 provisioner "local-exec" {
   command = <<EOF
