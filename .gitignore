@@ -22,6 +22,6 @@ Keys/
 #Backup files
 *.Backup
 
-terraform.lock.hcl/
+*terraform.lock.hcl
 *.terraform
 *.tftpl
