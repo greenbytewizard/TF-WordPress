@@ -42,7 +42,7 @@ resource "null_resource" "configure-vm" {
   # triggers: The triggers block specifies values that, when changed, cause Terraform to consider the resource to be "tainted" and thus trigger a recreation
   # Login to the ec2-user with the aws key.    
   provisioner "file" {
-    source      = template_file("lampstack.sh.tpl", {wordpress_user_pwd = random_password.wordpress_user_pwd.result})
+    source      = templatefile("lampstack.sh.tpl", {wordpress_user_pwd = random_password.wordpress_user_pwd.result})
     destination = "/tmp/lampstack.sh"
   }
   connection {
@@ -52,7 +52,7 @@ resource "null_resource" "configure-vm" {
     host        = aws_instance.ec2.public_ip
   }
   provisioner "file" {
-    source = template_file("lampstack.sh.tpl", {PASSWORD_1 = random_password.salt_passwords[0].result, 
+    source = templatefile("lampstack.sh.tpl", {PASSWORD_1 = random_password.salt_passwords[0].result, 
     PASSWORD_2 = random_password.salt_passwords[1].result, 
     PASSWORD_3 = random_password.salt_passwords[2].result, 
     PASSWORD_4 = random_password.salt_passwords[3].result, 
