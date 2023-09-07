@@ -42,7 +42,7 @@ done
 # [[ ... ]]: This is the syntax for starting a conditional expression in Bash. 
 # provide extended functionality for conditions, such as string comparison, pattern matching, and more. The double brackets are used to make complex conditions more readable and flexible compared to single brackets
 apps_status=("httpd" "mysqld")
-for i in "${apps_status[@]}";
+for i in "${apps_status[@]}"; 
     do
     status=$(chkconfig is-enabled "$i")
     
