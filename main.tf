@@ -62,12 +62,13 @@ resource "null_resource" "configure-vm" {
       host        = aws_instance.ec2.public_ip
     }
   }
-
+  # chmod u=rwx <filename> the User can Read, Write, and Execute it
   # Change permissions on bash script and execute from ec2-user.
   # [,] an array of... 
   provisioner "remote-exec" {
     inline = [
-      "chmod +x /tmp/lampstack.sh && dos2unix /tmp/lampstack.sh && sudo /tmp/lampstack.sh"
+      "sudo yum install -y dos2unix",
+      "sudo chmod +x /tmp/lampstack.sh",
     ]
 
     connection {
