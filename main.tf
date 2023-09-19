@@ -62,15 +62,17 @@ resource "null_resource" "configure-vm" {
       host        = aws_instance.ec2.public_ip
     }
   }
-  # chmod u=rwx <filename> the User can Read, Write, and Execute it
+  # chmod u=rwx <filename> the User can Read, Write, and Execute it. chmod u=x: Sets the execute permission for the owner (user) to "x".
+  # chmod +x: Adds execute permission to the owner, group, and others.
   # Change permissions on bash script and execute from ec2-user.
   # [,] an array of... 
   provisioner "remote-exec" {
     inline = [
       "sudo yum install -y dos2unix",
       "sudo chmod +x /tmp/lampstack.sh",
+      "sudo /tmp/lampstack.sh"
     ]
-
+    # dos2unix - convert text files with DOS or MAC line breaks to Unix line breaks. Needed due to templatefile running on local windows machine.
     connection {
       type        = "ssh"
       user        = "ec2-user"
