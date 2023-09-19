@@ -121,7 +121,7 @@ sed -i "s/'password_here'/'${wordpress_user_pwd}'/g" wordpress/wp-config.php
 
 # Authentication Keys for each loop $${PASSWORD_1}for random passwords 
 lineNo=51
-var="define( 'AUTH_KEY', '' );"
+var="define( 'AUTH_KEY', '${PASSWORD_1}' );"
 sed -i "$${lineNo}s/.*/$var/" wordpress/wp-config.php
 
 lineNo=52
