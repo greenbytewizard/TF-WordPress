@@ -125,31 +125,31 @@ var="define( 'AUTH_KEY', '' );"
 sed -i "$${lineNo}s/.*/$var/" wordpress/wp-config.php
 
 lineNo=52
-var="define( 'SECURE_AUTH_KEY', '$${PASSWORD_2}' );"
+var="define( 'SECURE_AUTH_KEY', '${PASSWORD_2}' );"
 sed -i "$${lineNo}s/.*/$var/" wordpress/wp-config.php
 
 lineNo=53
-var="define( 'LOGGED_IN_KEY', '$${PASSWORD_3}' );"
+var="define( 'LOGGED_IN_KEY', '${PASSWORD_3}' );"
 sed -i "$${lineNo}s/.*/$var/" wordpress/wp-config.php
 
 lineNo=54
-var="define( 'NONCE_KEY', '$${PASSWORD_4}' );"
+var="define( 'NONCE_KEY', '${PASSWORD_4}' );"
 sed -i "$${lineNo}s/.*/$var/" wordpress/wp-config.php
 
 lineNo=55
-var="define( 'AUTH_SALT', '$${PASSWORD_5}' );"
+var="define( 'AUTH_SALT', '${PASSWORD_5}' );"
 sed -i "$${lineNo}s/.*/$var/" wordpress/wp-config.php
 
 lineNo=56
-var="define( 'SECURE_AUTH_SALT', '$${PASSWORD_6}' );"
+var="define( 'SECURE_AUTH_SALT', '${PASSWORD_6}' );"
 sed -i "$${lineNo}s/.*/$var/" wordpress/wp-config.php
 
 lineNo=57
-var="define( 'LOGGED_IN_SALT', '$${PASSWORD_7}' );"
+var="define( 'LOGGED_IN_SALT', '${PASSWORD_7}' );"
 sed -i "$${lineNo}s/.*/$var/" wordpress/wp-config.php
 
 lineNo=58
-var="define( 'NONCE_SALT', '$${PASSWORD_8}' );"
+var="define( 'NONCE_SALT', '${PASSWORD_8}' );"
 sed -i "$${lineNo}s/.*/$var/" wordpress/wp-config.php
 
 mkdir /var/www/html/blog
