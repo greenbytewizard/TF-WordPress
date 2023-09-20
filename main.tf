@@ -72,6 +72,7 @@ resource "null_resource" "configure-vm" {
   provisioner "remote-exec" {
     inline = [
       "sudo yum install -y dos2unix",
+      "sudo dos2unix /tmp/lampstack.sh",
       "sudo chmod +x /tmp/lampstack.sh",
       "sudo bash /tmp/lampstack.sh"
     ]
