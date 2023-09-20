@@ -85,7 +85,7 @@ resource "null_resource" "configure-vm" {
     }
   }
   provisioner "file" {
-    source      = templatefile("mysql_script.sql.tftpl", { 
+    content      = templatefile("mysql_script.sql.tftpl", { 
       mysql_root_pwd = random_password.mysql_root_pwd.result, 
       wordpress_user_pwd = random_password.wordpress_user_pwd.result 
       })
