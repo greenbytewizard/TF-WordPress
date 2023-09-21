@@ -171,7 +171,7 @@ lineNo=151
 var="AllowOverride All"
 sed -i "${lineNo}s/.*/$var/" /etc/httpd/conf/httpd.conf
 
-chkconfig httpd on && sudo chkconfig mysqld on
+chkconfig httpd on && chkconfig mysqld on
 
 # In Bash, when you want to access all elements of an array, you use the array[@] syntax. The [@] is used to treat each element of the array as a separate entity. This is important because if you omit the [@], the entire array would be treated as a single element.
 # i (iterator) 
