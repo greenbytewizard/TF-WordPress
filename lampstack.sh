@@ -8,7 +8,7 @@ for ((current_attempt=1; current_attempt <= max_attempts; current_attempt++));
     echo "Attempt $current_attempt:"
     # Run the commands
     dnf upgrade -y
-    dnf install -y httpd wget php-fpm php-mysqli php-json php php-devel
+    dnf install -y wget httpd php-fpm php-mysqli php-json php php-devel
     # Check if the commands were successful
     if [ $? -eq 0 ];
         then
@@ -68,7 +68,6 @@ fi
 }
 
 CheckUserGroups
-
 # ls -lah /var/www
 # Change group ownership, write permissions for directory/file
 # stat -c(use the specified FORMAT instead of the default); %a(access rights in octal) %A(acess rights in human readable form) --help
@@ -98,9 +97,6 @@ done
 
 # Host a WordPress Blog
 # tar -xzf (extract, gzip filter, creates file)
-
-#!/bin/bash
-
 while [ ! -f latest.tar.gz ]; do
     wget https://wordpress.org/latest.tar.gz
     sleep 5
@@ -109,8 +105,19 @@ done
 echo "Extracting Tarball"
 tar -xzf latest.tar.gz
 
-systemctl start mariadb
+systemctl start mariadb httpd
 
+mysql -u root <<EOF
+    UPDATE mysql.user SET Password = PASSWORD('${mysql_root_pwd}') WHERE USER = 'root';
+    DROP USER ''@'localhost';
+    UPDATE mysql.user SET Host = 'localhost' WHERE User = 'root' AND Host = '%';
+    DROP DATABASE IF EXISTS test;
+    CREATE USER 'bob.saget'@'localhost' IDENTIFIED BY '${wordpress_user_pwd}';
+    GRANT ALL PRIVILEGES ON *.* TO 'bob.saget'@'localhost';
+    CREATE DATABASE fullhousedb;
+    GRANT ALL PRIVILEGES ON fullhousedb.* TO 'bob.saget'@'localhost';
+    FLUSH PRIVILEGES;
+EOF
 # the source command (also known as the `.` command) is used to execute another script within the current script.
 # Create and edit wp-config.php file
 #sed examples (single dash command) -nei same as -n -e -i (interrupt that and split each character)

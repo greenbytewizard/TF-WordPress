@@ -23,6 +23,11 @@ resource "aws_key_pair" "kp" {
   interpreter = ["PowerShell", "-Command"]
   }
 }
+# In PowerShell, double-quoted strings (") allow you to embed variables within the string by using $variableName. 
+# The backtick (`) character is used as an escape character to insert a newline (n) character, which creates 
+# a line break between "Password 1" and "Password 2" in the final output.
+# The | symbol is known as the pipe operator in PowerShell. 
+# It is used to pass the output (in this case, the value of the $output variable) from one command to another as input.
 # > ./'${var.generated_key_name}'.pem: This part of the command uses the output redirection (>) to write the echoed content () into a file on the current directory
 # create an instance
 resource "aws_instance" "ec2" {
@@ -58,40 +63,19 @@ resource "null_resource" "configure-vm" {
   provisioner "remote-exec" {
     inline = [
       "sudo chmod +x /tmp/lampstack.sh",
-      "sudo /tmp/lampstack.sh ${PASSWORD_1} ${PASSWORD_2} ${PASSWORD_3} ${PASSWORD_4} ${PASSWORD_5} ${PASSWORD_6} ${PASSWORD_7} ${PASSWORD_8}",
+      "sudo /tmp/lampstack.sh $PASSWORD_1 $PASSWORD_2 $PASSWORD_3 $PASSWORD_4 $PASSWORD_5 $PASSWORD_6 $PASSWORD_7 $PASSWORD_8 $mysql_root_pwd $wordpress_user_pwd",
     ]
       vars = {
       PASSWORD_1 = random_password.salt_passwords[0].result, 
       PASSWORD_2 = random_password.salt_passwords[1].result, 
       PASSWORD_3 = random_password.salt_passwords[2].result,
       PASSWORD_4 = random_password.salt_passwords[3].result, 
-      PASSWORD_5 = random_password.salt_passwords[4].result, 
+      PASSWORD_5 = random_password.salt_passwords[4].result,
       PASSWORD_6 = random_password.salt_passwords[5].result,
       PASSWORD_7 = random_password.salt_passwords[6].result, 
       PASSWORD_8 = random_password.salt_passwords[7].result,
-      wordpress_user_pwd = random_password.wordpress_user_pwd.result
-    }
-    connection {
-      type        = "ssh"
-      user        = "ec2-user"
-      private_key = tls_private_key.ssh.private_key_pem
-      host        = aws_instance.ec2.public_ip
-    }
-  }
-}
-resource "null_resource" "configure-mysql" {
-  provisioner "file" {
-    source      = "./GitHub/mysql_script.sql"  # Path to your .sh file
-    destination = "/tmp/mysql_scipt.sql"           # Destination on the EC2 instance
-  }
-  provisioner "remote-exec" {
-    inline = [
-      "sudo chmod +x /tmp/mysql_scipt.sql",
-      "sudo /tmp/mysql_scipt.sql ${mysql_root_pwd} ${wordpress_user_pwd}",
-    ]
-    vars = {
-      mysql_root_pwd = random_password.mysql_root_pwd.result, 
-      wordpress_user_pwd = random_password.wordpress_user_pwd.result
+      mysql_root_pwd = random_password.mysql_root_pwd.result,
+      wordpress_user_pwd = random_password.wordpress_user_pwd.result,
     }
     connection {
       type        = "ssh"
@@ -114,8 +98,3 @@ resource "random_password" "salt_passwords" {
   special          = true
   override_special = "!@#$%&*()-_=+[]{}|;:'\",.<>?/`~"
 }
-# In PowerShell, double-quoted strings (") allow you to embed variables within the string by using $variableName. 
-# The backtick (`) character is used as an escape character to insert a newline (n) character, which creates 
-# a line break between "Password 1" and "Password 2" in the final output.
-# The | symbol is known as the pipe operator in PowerShell. 
-# It is used to pass the output (in this case, the value of the $output variable) from one command to another as input.
