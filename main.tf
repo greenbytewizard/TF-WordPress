@@ -65,7 +65,7 @@ resource "null_resource" "configure-vm" {
       "sudo chmod +x /tmp/lampstack.sh",
       "sudo /tmp/lampstack.sh $PASSWORD_1 $PASSWORD_2 $PASSWORD_3 $PASSWORD_4 $PASSWORD_5 $PASSWORD_6 $PASSWORD_7 $PASSWORD_8 $mysql_root_pwd $wordpress_user_pwd",
     ]
-      vars = {
+    environment = {
       PASSWORD_1 = random_password.salt_passwords[0].result, 
       PASSWORD_2 = random_password.salt_passwords[1].result, 
       PASSWORD_3 = random_password.salt_passwords[2].result,
@@ -77,13 +77,7 @@ resource "null_resource" "configure-vm" {
       mysql_root_pwd = random_password.mysql_root_pwd.result,
       wordpress_user_pwd = random_password.wordpress_user_pwd.result,
     }
-    connection {
-      type        = "ssh"
-      user        = "ec2-user"
-      private_key = tls_private_key.ssh.private_key_pem
-      host        = aws_instance.ec2.public_ip
-    }
-  }
+  }  
 }
 resource "random_password" "mysql_root_pwd" {
   length = 16
