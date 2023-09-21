@@ -109,7 +109,7 @@ done
 echo "Extracting Tarball"
 tar -xzf latest.tar.gz
 
-mysql -u root <<EOF
+mysql <<EOF
     UPDATE mysql.user SET Password = PASSWORD('${mysql_root_pwd}') WHERE USER = 'root';
     DROP USER ''@'localhost';
     UPDATE mysql.user SET Host = 'localhost' WHERE User = 'root' AND Host = '%';
@@ -170,8 +170,6 @@ cp -r wordpress/* /var/www/html/
 lineNo=151
 var="AllowOverride All"
 sed -i "${lineNo}s/.*/$var/" /etc/httpd/conf/httpd.conf
-
-chkconfig httpd on && chkconfig mysqld on
 
 # In Bash, when you want to access all elements of an array, you use the array[@] syntax. The [@] is used to treat each element of the array as a separate entity. This is important because if you omit the [@], the entire array would be treated as a single element.
 # i (iterator) 
