@@ -37,7 +37,7 @@ resource "aws_instance" "ec2" {
   key_name        = var.generated_key_name
   instance_type   = var.instance_type
   tags = {
-    name = "SkyNet"
+    Name = "SkyNet"
   }
 }
 #  A null_resource is used for running local provisioners and doesn't create any actual infrastructure.
