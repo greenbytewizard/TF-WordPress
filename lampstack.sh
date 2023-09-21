@@ -1,4 +1,16 @@
 #!/bin/bash
+
+    export PASSWORD_1="random_password.salt_passwords[0].result" 
+    export PASSWORD_2="random_password.salt_passwords[1].result" 
+    export PASSWORD_3="random_password.salt_passwords[2].result"
+    export PASSWORD_4="random_password.salt_passwords[3].result" 
+    export PASSWORD_5="random_password.salt_passwords[4].result"
+    export PASSWORD_6="random_password.salt_passwords[5].result"
+    export PASSWORD_7="random_password.salt_passwords[6].result" 
+    export PASSWORD_8="random_password.salt_passwords[7].result"
+    export mysql_root_pwd="random_password.mysql_root_pwd.result"
+    export wordpress_user_pwd="random_password.wordpress_user_pwd.result"
+    
 # Run as root and remember to keep it simple
 # Prepare LAMP Server for Amazon Linux 2
 # Define the number of attempts

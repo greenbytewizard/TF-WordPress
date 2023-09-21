@@ -63,20 +63,8 @@ resource "null_resource" "configure-vm" {
   provisioner "remote-exec" {
     inline = [
       "sudo chmod +x /tmp/lampstack.sh",
-      "sudo /tmp/lampstack.sh $PASSWORD_1 $PASSWORD_2 $PASSWORD_3 $PASSWORD_4 $PASSWORD_5 $PASSWORD_6 $PASSWORD_7 $PASSWORD_8 $mysql_root_pwd $wordpress_user_pwd",
+      "sudo /tmp/lampstack.sh",
     ]
-    environment = {
-      PASSWORD_1 = random_password.salt_passwords[0].result, 
-      PASSWORD_2 = random_password.salt_passwords[1].result, 
-      PASSWORD_3 = random_password.salt_passwords[2].result,
-      PASSWORD_4 = random_password.salt_passwords[3].result, 
-      PASSWORD_5 = random_password.salt_passwords[4].result,
-      PASSWORD_6 = random_password.salt_passwords[5].result,
-      PASSWORD_7 = random_password.salt_passwords[6].result, 
-      PASSWORD_8 = random_password.salt_passwords[7].result,
-      mysql_root_pwd = random_password.mysql_root_pwd.result,
-      wordpress_user_pwd = random_password.wordpress_user_pwd.result,
-    }
   }  
 }
 resource "random_password" "mysql_root_pwd" {
