@@ -3,7 +3,6 @@
 locals {
   keyPath = "./'${var.generated_key_name}'.pem"
 }
-
 resource "tls_private_key" "ssh" {
   algorithm = "RSA"
   rsa_bits  = 4096
@@ -24,7 +23,6 @@ resource "aws_key_pair" "kp" {
   interpreter = ["PowerShell", "-Command"]
   }
 }
-
 # > ./'${var.generated_key_name}'.pem: This part of the command uses the output redirection (>) to write the echoed content () into a file on the current directory
 # create an instance
 resource "aws_instance" "ec2" {
@@ -37,16 +35,32 @@ resource "aws_instance" "ec2" {
     name = "SkyNet"
   }
 }
-
 #  A null_resource is used for running local provisioners and doesn't create any actual infrastructure.
 resource "null_resource" "configure-vm" {
   triggers = {
     web_id = aws_instance.ec2.public_ip
   }
-  # triggers: The triggers block specifies values that, when changed, cause Terraform to consider the resource to be "tainted" and thus trigger a recreation
-  # Login to the ec2-user with the aws key.    
+  # triggers: The triggers block specifies values that, when changed, cause Terraform to consider the resource to be "tainted" and thus trigger a recreation    
   provisioner "file" {
-    content = templatefile("lampstack.sh.tftpl", { 
+    source      = "./GitHub/lampstack.sh"  # Path to your .sh file
+    destination = "/tmp/lampstack.sh"      # Destination on the EC2 instance
+  }
+    connection {
+      type        = "ssh"
+      user        = "ec2-user"
+      private_key = tls_private_key.ssh.private_key_pem
+      host        = aws_instance.ec2.public_ip
+    }
+  # chmod commands: u refers to the owner of the file. + is used to add permissions. r stands for read permission. 
+  # w stands for write permission. x stands for execute permission.
+  # Change permissions on bash script and execute from ec2-user.
+  # [,] an array of... 
+  provisioner "remote-exec" {
+    inline = [
+      "sudo chmod +x /tmp/lampstack.sh",
+      "sudo /tmp/lampstack.sh ${PASSWORD_1} ${PASSWORD_2} ${PASSWORD_3} ${PASSWORD_4} ${PASSWORD_5} ${PASSWORD_6} ${PASSWORD_7} ${PASSWORD_8}",
+    ]
+      vars = {
       PASSWORD_1 = random_password.salt_passwords[0].result, 
       PASSWORD_2 = random_password.salt_passwords[1].result, 
       PASSWORD_3 = random_password.salt_passwords[2].result,
@@ -55,9 +69,8 @@ resource "null_resource" "configure-vm" {
       PASSWORD_6 = random_password.salt_passwords[5].result,
       PASSWORD_7 = random_password.salt_passwords[6].result, 
       PASSWORD_8 = random_password.salt_passwords[7].result,
-      wordpress_user_pwd = random_password.wordpress_user_pwd.result })
-    destination ="/tmp/lampstack.sh"
-
+      wordpress_user_pwd = random_password.wordpress_user_pwd.result
+    }
     connection {
       type        = "ssh"
       user        = "ec2-user"
@@ -65,32 +78,21 @@ resource "null_resource" "configure-vm" {
       host        = aws_instance.ec2.public_ip
     }
   }
-  # chmod commands: u refers to the owner of the file. + is used to add permissions. r stands for read permission. 
-  # w stands for write permission. x stands for execute permission.
-  # Change permissions on bash script and execute from ec2-user.
-  # [,] an array of... 
+}
+resource "null_resource" "configure-mysql" {
+  provisioner "file" {
+    source      = "./GitHub/mysql_script.sql"  # Path to your .sh file
+    destination = "/tmp/mysql_scipt.sql"           # Destination on the EC2 instance
+  }
   provisioner "remote-exec" {
     inline = [
-      "sudo yum install -y dos2unix",
-      "sudo dos2unix /tmp/lampstack.sh",
-      "sudo chmod +x /tmp/lampstack.sh",
-      "sudo bash /tmp/lampstack.sh"
+      "sudo chmod +x /tmp/mysql_scipt.sql",
+      "sudo /tmp/mysql_scipt.sql ${mysql_root_pwd} ${wordpress_user_pwd}",
     ]
-    # dos2unix - convert text files with DOS or MAC line breaks to Unix line breaks. Needed due to templatefile running on local windows machine.
-    connection {
-      type        = "ssh"
-      user        = "ec2-user"
-      private_key = tls_private_key.ssh.private_key_pem
-      host        = aws_instance.ec2.public_ip
-    }
-  }
-  provisioner "file" {
-    content      = templatefile("mysql_script.sql.tftpl", { 
+    vars = {
       mysql_root_pwd = random_password.mysql_root_pwd.result, 
-      wordpress_user_pwd = random_password.wordpress_user_pwd.result 
-      })
-    destination = "/tmp/mysql_scipt.sql"
-
+      wordpress_user_pwd = random_password.wordpress_user_pwd.result
+    }
     connection {
       type        = "ssh"
       user        = "ec2-user"
