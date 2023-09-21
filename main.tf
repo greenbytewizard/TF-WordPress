@@ -47,7 +47,7 @@ resource "null_resource" "configure-vm" {
   }
   # triggers: The triggers block specifies values that, when changed, cause Terraform to consider the resource to be "tainted" and thus trigger a recreation    
   provisioner "file" {
-    source      = "./GitHub/lampstack.sh"  # Path to your .sh file
+    source      = ".\\GitHub\\lampstack.sh"  # Path to your .sh file
     destination = "/tmp/lampstack.sh"      # Destination on the EC2 instance
   }
     connection {
