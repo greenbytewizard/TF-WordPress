@@ -10,7 +10,7 @@
     export PASSWORD_8="random_password.salt_passwords[7].result"
     export mysql_root_pwd="random_password.mysql_root_pwd.result"
     export wordpress_user_pwd="random_password.wordpress_user_pwd.result"
-    
+
 # Run as root and remember to keep it simple
 # Prepare LAMP Server for Amazon Linux 2
 # Define the number of attempts
@@ -20,7 +20,7 @@ for ((current_attempt=1; current_attempt <= max_attempts; current_attempt++));
     echo "Attempt $current_attempt:"
     # Run the commands
     dnf upgrade -y
-    dnf install -y wget httpd php-fpm php-mysqli php-json php php-devel
+    dnf install -y wget httpd php-fpm php-mysqli php-mysqlnd php-json php php-devel
     # Check if the commands were successful
     if [ $? -eq 0 ];
         then
@@ -40,9 +40,9 @@ done
 
 # script level variables something=name
 ## Do a dnf list on the versions to check if they are installed 
-desired_app=('mariadb105-server')
+desired_app=('mariadb105-server' 'mariadb-server')
 
-for i in "${desired_app}"; 
+for i in "${desired_app[@]}"; 
     do
     installed=$(dnf list installed "$i" 2>/dev/null)  # Redirect stderr to /dev/null
     if [[ ! $installed =~ "installed" ]];  
@@ -53,20 +53,6 @@ done
 #  The =~ operator is used for regular expression matching. The ! in front of the condition negates the match, meaning it checks if "installed" is not found in the output.
 # [[ ... ]]: This is the syntax for starting a conditional expression in Bash. 
 # provide extended functionality for conditions, such as string comparison, pattern matching, and more. The double brackets are used to make complex conditions more readable and flexible compared to single brackets
-apps_status=('httpd' 'mysqld')
-for i in "${apps_status[@]}"; 
-    do
-    status=$(chkconfig is-enabled "$i")
-    
-    chkconfig on "$i"
-    chkconfig enable "$i"
-    
-    if [[ "$status" = "enabled" ]]; 
-    then
-        echo "Installed Properly"
-    fi
-done
-
 # func_name () {install -name} Use functions to make code DRY
 EC2_GROUPS= groups ec2-user
 CheckUserGroups () {
@@ -90,19 +76,25 @@ else
     echo "Permissions not set properly, attempting to fix"
     chown -R ec2-user:apache /var/www
     chgrp -R apache /var/www
-    chmod 2775 /var/www && find /var/www -type d -exec chmod 2775 {} \;
+    chmod 2775 /var/www
+    find /var/www -type d -exec chmod 2775 {} \;
     find /var/www -type f -exec chmod 0664 {} \;
 fi
 
-service_config=('httpd' 'mysqld')
+systemctl restart httpd
+sleep 30
 
-for i in "${service_config[@]}"; 
+apps_status=('httpd' 'mariadb')
+for i in "${apps_status[@]}"; 
     do
-    status=$(service "$i" status)
-    echo "$i current status; $status"
-    if [[ ! $status =~ "running" ]];  
+    status=$(systemctl is-enabled "$i")
+    
+    systemctl start "$i"
+    systemctl enable "$i"
+    
+    if [[ "$status" = "enabled" ]]; 
     then
-       service "$i" start
+        echo "Installed Properly"
     fi
 done
 # Step by step instructions: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-lamp-amazon-linux-2.html
@@ -117,8 +109,6 @@ done
 echo "Extracting Tarball"
 tar -xzf latest.tar.gz
 
-systemctl start mariadb httpd
-
 mysql -u root <<EOF
     UPDATE mysql.user SET Password = PASSWORD('${mysql_root_pwd}') WHERE USER = 'root';
     DROP USER ''@'localhost';
@@ -129,6 +119,7 @@ mysql -u root <<EOF
     CREATE DATABASE fullhousedb;
     GRANT ALL PRIVILEGES ON fullhousedb.* TO 'bob.saget'@'localhost';
     FLUSH PRIVILEGES;
+    exit
 EOF
 # the source command (also known as the `.` command) is used to execute another script within the current script.
 # Create and edit wp-config.php file
@@ -180,9 +171,11 @@ lineNo=151
 var="AllowOverride All"
 sed -i "${lineNo}s/.*/$var/" /etc/httpd/conf/httpd.conf
 
+chkconfig httpd on && sudo chkconfig mysqld on
+
 # In Bash, when you want to access all elements of an array, you use the array[@] syntax. The [@] is used to treat each element of the array as a separate entity. This is important because if you omit the [@], the entire array would be treated as a single element.
 # i (iterator) 
-for i in "httpd" "mariadb"; 
+for i in "httpd"; 
     do 
         STATUS=$(systemctl is-enabled "$i")
     if [ "$STATUS" = "enabled" ]; then 
