@@ -14,15 +14,13 @@ resource "aws_key_pair" "kp" {
   public_key = tls_private_key.ssh.public_key_openssh
 
   # Create "terraform-key-pair.pem" in current directory
-  provisioner "local-exec" {
-    command = <<EOF
-      $privateKey = "${tls_private_key.ssh.private_key_pem}"
-      $privateKey | Out-File -FilePath ".\\${var.generated_key_name}.pem" -Encoding utf8
-      Set-Content ".\\${var.generated_key_name}.pem" -Value $privateKey -Encoding utf8
-      attrib +R ".\\${var.generated_key_name}.pem"
+ provisioner "local-exec" {
+  command = <<-EOF
+    privateKey="${tls_private_key.ssh.private_key_pem}"
+    echo "$privateKey" > "./${var.generated_key_name}.pem"
+    chmod 400 "./${var.generated_key_name}.pem"
   EOF
-  interpreter = ["PowerShell", "-Command"]
-  }
+  interpreter = ["bash", "-c"]
 }
 
 # > ./'${var.generated_key_name}'.pem: This part of the command uses the output redirection (>) to write the echoed content () into a file on the current directory
